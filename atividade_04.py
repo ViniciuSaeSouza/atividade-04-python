@@ -155,37 +155,43 @@ def editar_assinatura() -> None:
 	planos = {"base":14.90,
 			"plus":24.90,
 			"premium":34.90}
-	
+  
 	cpf = verifica_vazio("CPF (xxxxxxxxxxx): ")
+  
 	if verifica_registro(cpf):
 		if cliente["ativo"] == 'TRUE':
-			print(f"""-- Seu plano atual é cpf = {cliente['plano']}""")
-			escolhe = input(f""" 
-			Digite de 1 a 3 para alterar seu plano:
-			1 - Base
-			2 - Plus
-			3 - Premium
-			""")
-			match escolhe:
-				case"1":
-					plano = "base"
-				case"2":
-					plano = "plus"
-				case"3":
-					plano = "premium"
-				case _:
-					print("ERRO! Opção inválida.")	
-			sql = f"UPDATE assinantes SET plano = '{plano.capitalize()}' WHERE cpf = {cpf}"
-			print('Dados atualizados')
-			try:
-				instr_update.execute(sql)
-				conn.commit()
-				return True
-			except Exception as e:
-				print(e)
-				return False
+			print("----------------------------------------------------------------------------------------------------------------------------")
+			print(f"""Olá {cliente['nome'].capitalize()}, está é a aba de edição da sua assinatura. O Seu plano atual é = {cliente['plano']}.""")
+			while True:
+				escolhe = input(f""" 
+Digite de 1 a 3 para alterar seu plano:
+1 - Base
+2 - Plus
+3 - Premium	
+Escolha : """)
+				print("----------------------------------------------------------------------------------------------------------------------------")
+				match escolhe:
+					case"1":
+						plano = "base"
+					case"2":
+						plano = "plus"
+					case"3":
+						plano = "premium"
+					case _:
+						print("ERRO! Opção inválida.")	
+						continue 
+					
+				sql = f"UPDATE assinantes SET plano = '{plano.capitalize()}' WHERE cpf = {cpf}"
+				print (f'''Sua conta foi atualizada, agora seu plano é {plano.capitalize()}''')
+				try:
+					instr_update.execute(sql)
+					conn.commit()
+					return True
+				except Exception as e:
+					print(e)
+					return False
 		else:
-			print("CPF inativo!!")
+			print("CPF inativo, não consta no sistema!!")
 
 def listar_assinantes() -> None:
 	while True:
@@ -195,7 +201,13 @@ def listar_assinantes() -> None:
 			result = instr_read.fetchall()
 		except Exception as e:
 			print(e)
-		print(result)
+		print("--------------------------------------------------------------------")
+		print("Esta é a lista de todos os registros em nosso sistema")
+		print("CPF -------------- NOME ----------- CONTA ----- VALOR ------- ATIVO")
+		for row in result:
+			cpf, nome, conta, valor, ativo = row
+			print(f"{cpf:<17} {nome:<17} {conta:<12} {valor:<12} {ativo}")
+		print("--------------------------------------------------------------------")
 		break
 
 def listar_todos_cliente() -> None:
@@ -206,7 +218,13 @@ def listar_todos_cliente() -> None:
 			result = instr_read.fetchall()
 		except Exception as e:
 			print(e)
-		print(result)
+		print("--------------------------------------------------------------------")
+		print("Esta é a lista de todos os registros em nosso sistema")
+		print("CPF -------------- NOME ----------- CONTA ----- VALOR ------- ATIVO")
+		for row in result:
+			cpf, nome, conta, valor, ativo = row
+			print(f"{cpf:<17} {nome:<17} {conta:<12} {valor:<12} {ativo}")
+		print("--------------------------------------------------------------------")
 		break
 
 

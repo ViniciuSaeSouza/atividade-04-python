@@ -186,12 +186,14 @@ Escolha : """)
 				try:
 					instr_update.execute(sql)
 					conn.commit()
+					input("Pressione qualquer tecla para voltar ao menu: ")
 					return True
 				except Exception as e:
 					print(e)
 					return False
 		else:
 			print("CPF inativo, não consta no sistema!!")
+			input("Pressione qualquer tecla para voltar ao menu: ")
 
 def listar_assinantes() -> None:
 	while True:
@@ -208,6 +210,7 @@ def listar_assinantes() -> None:
 			cpf, nome, conta, valor, ativo = row
 			print(f"{cpf:<17} {nome:<17} {conta:<12} {valor:<12} {ativo}")
 		print("--------------------------------------------------------------------")
+		input("Pressione qualquer tecla para voltar ao menu: ")
 		break
 
 def listar_todos_cliente() -> None:
@@ -225,6 +228,7 @@ def listar_todos_cliente() -> None:
 			cpf, nome, conta, valor, ativo = row
 			print(f"{cpf:<17} {nome:<17} {conta:<12} {valor:<12} {ativo}")
 		print("--------------------------------------------------------------------")
+		input("Pressione qualquer tecla para voltar ao menu: ")
 		break
 
 
@@ -271,6 +275,7 @@ Confirmar cancelamento:
 					conn.commit()
 					print("Assinatura cancelada com sucesso!")
 					input("Pressione qualquer tecla para voltar ao menu: ")
+					break
 				except Exception as e:
 					print(e)
 			case "2":

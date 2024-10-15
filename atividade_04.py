@@ -9,7 +9,18 @@ from dotenv import load_dotenv
 
 
 # VARIÁVEIS GLOBAIS
-cliente = {}
+cliente = {
+	'cpf' : '',
+	'nome' : '',
+	'plano' : '',
+	'mensalidade' : 0,
+	'ativo' : ''
+}
+planos = {
+	"base" : 14.90,
+	"plus" : 24.90,
+	"premium" : 34.90
+}
 
 # RECUPERANDO VARIÁVEIS DE AMBIENTE (USER, PASSWORD, DSN) DO ARQUIVO .ENV PARA MANTER MAIOR PRIVACIDADE DOS DADOS
 load_dotenv()
@@ -56,10 +67,21 @@ def verifica_registro(pk:str) -> bool:
 	else:
 		return False
 
+
+def verifica_vazio(texto:str) -> str:
+	while True:
+		temp = input(texto).lower()
+		if not temp:
+			print("Parece que não digitou nenhum valor!")
+			continue
+		return temp
+
+
 #Realiza o cadrastro do usuário
 #
 #
 def assinar_plano():
+    
 	cpf = input("CPF (xxxxxxxxxxx): ")
 	if verifica_registro(cpf):
 		if cliente["ativo"] == 'TRUE':
@@ -81,6 +103,52 @@ Escolha: """)
 						break
 					case _:
 						print("ERRO! Opção inválida.")
+
+		elif cliente["ativo"] == "FALSE":
+			while True:
+				escolha = input(f""" -- Bem vindo(a) novamente {cliente["nome"]}! --
+	1 - Re-ativar assinatura
+	2 - Menu
+	Escolha: """)
+				match escolha:
+					case "1":
+						# reativar_assinatura()
+						...
+					case "2":
+						break
+	else:
+		clear()
+		flag = True
+		while flag:
+			print("Seja bem vindo(a)! Vamos nos cadastrar...")
+			while flag:
+				nome = verifica_vazio("Primeiro nome: ")
+				sobrenome = verifica_vazio("Sobrenome: ")
+				print(f"\nPrazer {nome.capitalize()}! Agora vamos escolher o seu plano...\n")
+				i = 0
+				for plano, valor in planos.items():
+					print(f"{i+1} - {plano} (R${valor})")
+					i += 1
+				plano = verifica_vazio("Plano: ")
+				match plano:
+					case "1":
+						plano = "base"
+					case "2":
+						plano = "plus"
+					case "3":
+						plano = "premium"
+				aux = [cpf, f"{nome.capitalize()} {sobrenome.capitalize()}", plano.capitalize(), planos[plano], "TRUE"]
+				
+				for i, k in enumerate(cliente.keys()):
+					cliente[k] = aux[i]
+				
+				sql = f"INSERT INTO assinantes (cpf, nome, plano, mensalidade, ativo) VALUES ('{cliente['cpf']}', '{cliente['nome']}', '{cliente['plano']}', '{cliente['mensalidade']}', '{cliente['ativo']}')"
+				instr_create.execute(sql)
+				conn.commit()
+				print("Cliente cadastrado com sucesso!")
+				input("Pressione qualquer telca para voltar ao menu: ")
+				flag = False
+
 
 def editar_assinatura():
 	planos = {"base":14.90,
@@ -140,6 +208,7 @@ def listar_todos_cliente():
 		print(result)
 		break
 
+
 # LAÇO PRINCIPAL
 while conexao:
     #clear()
@@ -149,7 +218,8 @@ while conexao:
 2 - Editar assinatura
 3 - Listar assinantes
 4 - Listar todos os clientes
-5 - Excluir assinatura
+5 - Cancelar assinatura
+6 - Re-ativar assinatura
 """)
 	
     escolha = input("Escolha: ")

@@ -120,13 +120,25 @@ def editar_assinatura():
 
 def listar_assinantes():
 	while True:
-		sql = f"SELECT * FROM assinantes WHERE {cliente['ativo'] == True.upper()} "
+		sql = f"SELECT * FROM assinantes WHERE ativo = 'TRUE'"
 		try:
 			instr_read.execute(sql)
 			result = instr_read.fetchall()
 		except Exception as e:
 			print(e)
-		print(sql)
+		print(result)
+		break
+
+def listar_todos_cliente():
+	while True:
+		sql = f"SELECT * FROM assinantes"
+		try:
+			instr_read.execute(sql)
+			result = instr_read.fetchall()
+		except Exception as e:
+			print(e)
+		print(result)
+		break
 
 # LAÇO PRINCIPAL
 while conexao:
@@ -152,8 +164,7 @@ while conexao:
         case "3":
             listar_assinantes()
         case "4":
-            # listar_todos_cliente()
-            ...
+            listar_todos_cliente()
         case "5":
             # cancelar_assinatura()
             ...

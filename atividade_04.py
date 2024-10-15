@@ -9,13 +9,14 @@ from dotenv import load_dotenv
 
 
 # VARIÁVEIS GLOBAIS
-cliente = {
-	'cpf' : '',
-	'nome' : '',
-	'plano' : '',
-	'mensalidade' : 0,
-	'ativo' : ''
-}
+cliente = {}
+colunas = [
+	'cpf',
+	'nome',
+	'plano',
+	'mensalidade',
+	'ativo',
+]
 planos = {
 	"base" : 14.90,
 	"plus" : 24.90,
@@ -80,9 +81,9 @@ def verifica_vazio(texto:str) -> str:
 #Realiza o cadrastro do usuário
 #
 #
-def assinar_plano():
+def assinar_plano() -> None:
     
-	cpf = input("CPF (xxxxxxxxxxx): ")
+	cpf = verifica_vazio("CPF (xxxxxxxxxxx): ")
 	if verifica_registro(cpf):
 		if cliente["ativo"] == 'TRUE':
 			while True:
@@ -139,8 +140,8 @@ Escolha: """)
 						plano = "premium"
 				aux = [cpf, f"{nome.capitalize()} {sobrenome.capitalize()}", plano.capitalize(), planos[plano], "TRUE"]
 				
-				for i, k in enumerate(cliente.keys()):
-					cliente[k] = aux[i]
+				for i, chave in enumerate(colunas):
+					cliente[chave] = aux[i]
 				
 				sql = f"INSERT INTO assinantes (cpf, nome, plano, mensalidade, ativo) VALUES ('{cliente['cpf']}', '{cliente['nome']}', '{cliente['plano']}', '{cliente['mensalidade']}', '{cliente['ativo']}')"
 				instr_create.execute(sql)
@@ -150,13 +151,13 @@ Escolha: """)
 				flag = False
 
 
-def editar_assinatura():
+def editar_assinatura() -> None:
 	planos = {"base":14.90,
 			"plus":24.90,
 			"premium":34.90}
-	
-	cpf = input("CPF (xxxxxxxxxxx): ")
-
+  
+	cpf = verifica_vazio("CPF (xxxxxxxxxxx): ")
+  
 	if verifica_registro(cpf):
 		if cliente["ativo"] == 'TRUE':
 			print("----------------------------------------------------------------------------------------------------------------------------")
@@ -192,7 +193,7 @@ Escolha : """)
 		else:
 			print("CPF inativo, não consta no sistema!!")
 
-def listar_assinantes():
+def listar_assinantes() -> None:
 	while True:
 		sql = f"SELECT * FROM assinantes WHERE ativo = 'TRUE'"
 		try:
@@ -209,7 +210,7 @@ def listar_assinantes():
 		print("--------------------------------------------------------------------")
 		break
 
-def listar_todos_cliente():
+def listar_todos_cliente() -> None:
 	while True:
 		sql = f"SELECT * FROM assinantes"
 		try:
@@ -227,9 +228,160 @@ def listar_todos_cliente():
 		break
 
 
+
+
+
+def cancelar_assinatura() -> None:
+	clear()
+	print(" -- CANCELAMENTO DE ASSINATURA -- ")
+	if not cliente.items():
+		cpf = verifica_vazio("CPF (xxxxxxxxxxx): ")
+		if verifica_registro(cpf):
+			if cliente['ativo'] == "TRUE":
+				confirmar_cancelamento(cpf)
+			else:
+				print("\nSua assinatura já está cancelada!")
+				input("\nPressione qualquer tecla para voltar ao menu: ")
+	else:
+		if cliente['ativo'] == "TRUE":
+			confirmar_cancelamento(cliente['cpf'])
+		else:
+			print("Sua assinatura já está cancelada!")
+			input("Pressione qualquer tecla para voltar ao menu: ")
+  
+def confirmar_cancelamento(cpf:str) -> None:
+	clear()
+	print(" -- CANCELAMENTO DE ASSINATURA -- ")
+	while True:
+		print(f"""
+Nome: {cliente['nome']}
+Plano: {cliente['plano']}
+Mensalidade: {planos[cliente['plano'].lower()]:.2f}
+-----
+Confirmar cancelamento:
+1 - Sim
+2 - Não
+""")
+		escolha = input("Escolha: ")
+		match escolha:
+			case "1":
+				sql = f"UPDATE assinantes SET ativo = 'FALSE' WHERE cpf = {cpf}"
+				try:
+					instr_delete.execute(sql)
+					conn.commit()
+					print("Assinatura cancelada com sucesso!")
+					input("Pressione qualquer tecla para voltar ao menu: ")
+				except Exception as e:
+					print(e)
+			case "2":
+				print("Assinatura não foi cancelada!")
+				input("Pressione qualquer tecla para voltar ao menu: ")
+				break
+			case _:
+				clear()
+				print("Opção inválida!")
+
+
+  
+def confirmar_cancelamento(cpf:str) -> None:
+	clear()
+	print(" -- CANCELAMENTO DE ASSINATURA -- ")
+	while True:
+		print(f"""
+Nome: {cliente['nome']}
+Plano: {cliente['plano']}
+Mensalidade: {planos[cliente['plano'].lower()]:.2f}
+-----
+Confirmar cancelamento:
+1 - Sim
+2 - Não
+""")
+		escolha = input("Escolha: ")
+		match escolha:
+			case "1":
+				sql = f"UPDATE assinantes SET ativo = 'FALSE' WHERE cpf = {cpf}"
+				try:
+					instr_delete.execute(sql)
+					conn.commit()
+					print("Assinatura cancelada com sucesso!")
+					input("Pressione qualquer tecla para voltar ao menu: ")
+				except Exception as e:
+					print(e)
+			case "2":
+				print("Assinatura não foi cancelada!")
+				input("Pressione qualquer tecla para voltar ao menu: ")
+				break
+			case _:
+				clear()
+				print("Opção inválida!")
+     				
+def reativar_assinatura() -> None:
+	clear()
+	print(" -- RE-ATIVAÇÃO DE ASSINATURA -- ")
+	if not cliente.items():
+		cpf = verifica_vazio("CPF (xxxxxxxxxxx): ")
+		if verifica_registro(cpf):
+			
+			if cliente['ativo'] == "FALSE":
+				confirmar_ativacao(cpf)
+			else:
+				print("\nSua assinatura já está cancelada!")
+				input("\nPressione qualquer tecla para voltar ao menu: ")
+	else:
+		if cliente['ativo'] == "FALSE":
+			confirmar_ativacao(cliente['cpf'])
+		else:
+			print("Sua assinatura já está cancelada!")
+			input("Pressione qualquer tecla para voltar ao menu: ")
+   
+   
+def confirmar_ativacao(cpf:str) -> None:
+	clear()
+	print(" -- RE-ATIVAÇÃO DE ASSINATURA -- ")
+	print("\nConta encontrada!")
+	while True:
+		plano = verifica_vazio(f"""
+Confirmar novo plano:
+1 - Base
+2 - Plus
+3 - Premium
+Plano: """)
+		break
+
+	while True:
+		print(f"""
+Nome: {cliente['nome']}
+Plano: {cliente['plano']}
+Mensalidade: {planos[cliente['plano'].lower()]:.2f}
+-----
+Confirmar re-ativação:
+1 - Sim
+2 - Não
+""")
+		escolha = verifica_vazio("Escolha: ")
+		match escolha:
+			case "1":
+				sql = f"UPDATE assinantes SET ativo = 'TRUE' WHERE cpf = {cpf}"
+				try:
+					instr_delete.execute(sql)
+					conn.commit()
+					print("Assinatura ativada com sucesso!")
+					input("Pressione qualquer tecla para voltar ao menu: ")
+					break
+				except Exception as e:
+					print(e)
+			case "2":
+				print("Assinatura não foi ativada!")
+				input("Pressione qualquer tecla para voltar ao menu: ")
+				break
+			case _:
+				clear()
+				print("Opção inválida!")
+    
+
 # LAÇO PRINCIPAL
 while conexao:
-    #clear()
+    clear()
     print(" -- POTATO FLIX --")
     print("""\n0 - Sair
 1 - Assinar plano
@@ -254,10 +406,8 @@ while conexao:
         case "4":
             listar_todos_cliente()
         case "5":
-            # cancelar_assinatura()
-            ...
+            cancelar_assinatura()
         case "6":
-            # reativar_assinatura()
-            ...
+            reativar_assinatura() 
         case   _:
             print("ERRO. Opção inválida!")

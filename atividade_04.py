@@ -1,3 +1,8 @@
+#RM: 555678 --- NOME: João Victor Michaeli --- 1TDSPK
+#RM: 554456 --- NOME: Vinicius Saes de Souza --- 1TDSPK
+#RM: 558062 --- NOME: Henrique Francisco Garcia --- 1TDSPK
+
+
 import oracledb
 import os
 from dotenv import load_dotenv

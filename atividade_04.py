@@ -67,6 +67,7 @@ def verifica_registro(pk:str) -> bool:
 	else:
 		return False
 
+
 def verifica_vazio(texto:str) -> str:
 	while True:
 		temp = input(texto).lower()
@@ -75,6 +76,9 @@ def verifica_vazio(texto:str) -> str:
 			continue
 		return temp
 
+
+#Realiza o cadrastro do usuário
+#
 #
 def assinar_plano():
     
@@ -99,6 +103,7 @@ Escolha: """)
 						break
 					case _:
 						print("ERRO! Opção inválida.")
+
 		elif cliente["ativo"] == "FALSE":
 			while True:
 				escolha = input(f""" -- Bem vindo(a) novamente {cliente["nome"]}! --
@@ -143,10 +148,58 @@ Escolha: """)
 				print("Cliente cadastrado com sucesso!")
 				input("Pressione qualquer telca para voltar ao menu: ")
 				flag = False
-				
+
+
+def editar_assinatura():
+	planos = {"base":14.90,
+			"plus":24.90,
+			"premium":34.90}
+	
+	cpf = input("CPF (xxxxxxxxxxx): ")
+	if verifica_registro(cpf):
+		if cliente["ativo"] == 'TRUE':
+			print(f"""-- Seu plano atual é cpf = {cliente['plano']}""")
+			escolhe = input(f""" 
+			Digite de 1 a 3 para alterar seu plano:
+			1 - Base
+			2 - Plus
+			3 - Premium
+			""")
+			match escolhe:
+				case"1":
+					plano = "base"
+				case"2":
+					plano = "plus"
+				case"3":
+					plano = "premium"
+				case _:
+					print("ERRO! Opção inválida.")	
+			sql = f"UPDATE assinantes SET plano = '{plano.capitalize()}' WHERE cpf = {cpf}"
+			print('Dados atualizados')
+			try:
+				instr_update.execute(sql)
+				conn.commit()
+				return True
+			except Exception as e:
+				print(e)
+				return False
+		else:
+			print("CPF inativo!!")
+
+def listar_assinantes():
+	while True:
+		sql = f"SELECT * FROM assinantes WHERE {cliente['ativo'] == True.upper()} "
+		try:
+			instr_read.execute(sql)
+			result = instr_read.fetchall()
+		except Exception as e:
+			print(e)
+		print(sql)
+
+
 # LAÇO PRINCIPAL
 while conexao:
-    clear()
+    #clear()
     print(" -- POTATO FLIX --")
     print("""\n0 - Sair
 1 - Assinar plano
@@ -156,6 +209,7 @@ while conexao:
 5 - Cancelar assinatura
 6 - Re-ativar assinatura
 """)
+	
     escolha = input("Escolha: ")
     match escolha:
         case "0":
@@ -164,11 +218,9 @@ while conexao:
         case "1":
             assinar_plano()
         case "2":
-            # editar_assinatura()
-            ...
+            editar_assinatura()
         case "3":
-            # listar_assinantes()
-            ...
+            listar_assinantes()
         case "4":
             # listar_todos_cliente()
             ...

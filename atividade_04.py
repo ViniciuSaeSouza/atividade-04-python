@@ -43,30 +43,46 @@ def clear() -> None:
 # user_env / password_env / dsn_env
 
 def verifica_registro(pk:str) -> bool:
-    sql = f"SELECT * FROM assinantes WHERE cpf = {pk}"
-    instr_read.execute(sql)
-    result = instr_read.fetchall()        
-    cliente['cpf'] = result[0][0]
-    cliente['nome'] = result[0][1]
-    cliente['plano'] = result[0][2]
-    cliente['mensalidade'] = result[0][3]
-    cliente['ativo'] = result[0][4]
-    if result:
-        return True
-    else:
-        return False
-
-
+	sql = f"SELECT * FROM assinantes WHERE cpf = {pk}"
+	instr_read.execute(sql)
+	result = instr_read.fetchall()	
+	if result:
+		cliente['cpf'] = result[0][0]
+		cliente['nome'] = result[0][1]
+		cliente['plano'] = result[0][2]
+		cliente['mensalidade'] = result[0][3]
+		cliente['ativo'] = result[0][4]
+		return True
+	else:
+		return False
 #
 def assinar_plano():
-    cpf = input("CPF (xxxxxxxxxxx): ")
-    if verifica_registro(cpf):
-        print("Já temos um usuário cadastrado com este cpf!")
-        print(cliente)
+	cpf = input("CPF (xxxxxxxxxxx): ")
+	if verifica_registro(cpf):
+		if cliente["ativo"] == 'TRUE':
+			while True:
+				clear()
+				escolha = input(f""" -- Já temos um cadastro no CPF ({cpf}) --
+1 - Editar assinatura
+2 - Cancelar assinatura
+3 - Menu
+Escolha: """)
+				match escolha:
+					case "1":
+						# editar_assinatura()
+						...
+					case "2":
+						# cancelar_assinatura()
+						...
+					case "3":
+						break
+					case _:
+						print("ERRO! Opção inválida.")
+    
         
 # LAÇO PRINCIPAL
 while conexao:
-    # clear()
+    clear()
     print(" -- POTATO FLIX --")
     print("""\n0 - Sair
 1 - Assinar plano
@@ -81,7 +97,7 @@ while conexao:
             print("Fechando sistema....")
             exit()
         case "1":
-            print(assinar_plano())
+            assinar_plano()
         case "2":
             # editar_assinatura()
             ...
